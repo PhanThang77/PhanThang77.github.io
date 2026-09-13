@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>TRẠM BẢN VẼ — LISP / CAD / VBA / Excel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F1B2D;
+    --ink-soft:#1C2C43;
+    --paper:#E7E2D6;
+    --paper-bright:#F1EEE5;
+    --rust:#C4432B;
+    --teal:#4C7A6F;
+    --line:#9C9284;
+    --line-soft: rgba(156,146,132,0.35);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:15px;
+    line-height:1.6;
+    background-image:
+      linear-gradient(var(--line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  h1,h2,h3{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  a{color:inherit;}
+  .wrap{max-width:960px; margin:0 auto; padding:0 20px;}
+
+  /* ---------- Title block header ---------- */
+  header{
+    border-bottom:2px solid var(--ink);
+    background:var(--paper-bright);
+  }
+  .titleblock{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    padding:18px 0 14px;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .titleblock .mark{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:20px;
+    letter-spacing:-0.02em;
+  }
+  .titleblock .mark span{color:var(--rust);}
+  nav{
+    display:flex;
+    gap:0;
+    border:1px solid var(--ink);
+    border-radius:2px;
+  }
+  nav button{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    background:transparent;
+    border:none;
+    border-right:1px solid var(--ink);
+    padding:8px 14px;
+    cursor:pointer;
+    color:var(--ink);
+  }
+  nav button:last-child{border-right:none;}
+  nav button.active{background:var(--ink); color:var(--paper-bright);}
+  nav button:hover:not(.active){background:var(--line-soft);}
+
+  .nav-item{position:relative;}
+  .nav-item .dropdown{
+    position:absolute;
+    top:100%;
+    left:0;
+    margin-top:6px;
+    background:var(--paper-bright);
+    border:1px solid var(--ink);
+    border-radius:2px;
+    min-width:220px;
+    box-shadow:0 8px 20px rgba(15,27,45,0.16);
+    display:none;
+    z-index:150;
+  }
+  .nav-item .dropdown.open{display:block;}
+  .nav-item .dropdown a{
+    display:block;
+    padding:10px 14px;
+    font-size:12.5px;
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--ink);
+    text-decoration:none;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .nav-item .dropdown a:last-child{border-bottom:none;}
+  .nav-item .dropdown a:hover{background:var(--line-soft); color:var(--rust);}
+  .nav-item .dropdown a.active{color:var(--rust); font-weight:600;}
+  .empty-row td{
+    padding:22px 10px;
+    text-align:center;
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+
+  .lang-switch{display:none;}
+  .header-right{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+
+  /* ---------- Floating language pill (bottom-right) ---------- */
+  .lang-float{
+    position:fixed;
+    right:22px;
+    bottom:22px;
+    z-index:200;
+    font-family:'IBM Plex Mono', monospace;
+  }
+  .lang-pill{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--ink);
+    color:var(--paper-bright);
+    border:none;
+    border-radius:999px;
+    padding:10px 16px 10px 14px;
+    font-size:13px;
+    cursor:pointer;
+    box-shadow:0 4px 14px rgba(15,27,45,0.25);
+  }
+  .lang-pill .globe{
+    width:16px; height:16px;
+    border-radius:50%;
+    background:var(--teal);
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:10px;
+    flex-shrink:0;
+  }
+  .lang-pill .caret{font-size:10px; opacity:0.8;}
+  .lang-menu{
+    position:absolute;
+    right:0;
+    bottom:calc(100% + 10px);
+    background:var(--paper-bright);
+    border:1px solid var(--ink);
+    border-radius:10px;
+    overflow:hidden;
+    min-width:150px;
+    box-shadow:0 6px 18px rgba(15,27,45,0.18);
+    display:none;
+  }
+  .lang-menu.open{display:block;}
+  .lang-menu button{
+    display:block;
+    width:100%;
+    text-align:left;
+    background:transparent;
+    border:none;
+    border-bottom:1px solid var(--line-soft);
+    padding:10px 14px;
+    font-size:13px;
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .lang-menu button:last-child{border-bottom:none;}
+  .lang-menu button:hover{background:var(--line-soft);}
+  .lang-menu button.active{color:var(--rust); font-weight:600;}
+  @media (max-width:640px){
+    .lang-float{right:14px; bottom:14px;}
+  }
+
+  /* ---------- Hero / cover sheet ---------- */
+  .cover{padding:64px 0 40px;}
+  .cover .tag{
+    display:inline-block;
+    font-size:12px;
+    letter-spacing:0.02em;
+    border:1px solid var(--ink);
+    padding:3px 9px;
+    border-radius:2px;
+    margin-bottom:18px;
+  }
+  .cover h1{
+    font-size:44px;
+    line-height:1.08;
+    max-width:11ch;
+  }
+  .cover p.lede{
+    margin-top:18px;
+    max-width:52ch;
+    font-size:15.5px;
+    color:var(--ink-soft);
+  }
+  .rev-block{
+    margin-top:36px;
+    border:1px solid var(--ink);
+    border-radius:2px;
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    max-width:560px;
+  }
+  .rev-block div{
+    padding:10px 14px;
+    border-right:1px solid var(--ink);
+  }
+  .rev-block div:last-child{border-right:none;}
+  .rev-block .k{font-size:10.5px; color:var(--ink-soft); margin-bottom:3px;}
+  .rev-block .v{font-size:13px; font-weight:600;}
+
+  /* ---------- Sheet index ---------- */
+  .index{padding:20px 0 60px;}
+  .index-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:18px;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:10px;
+  }
+  .index-head h2{font-size:20px;}
+  .index-head .count{font-size:12px; color:var(--ink-soft);}
+
+  table{width:100%; border-collapse:collapse;}
+  thead th{
+    text-align:left;
+    font-size:11px;
+    letter-spacing:0.02em;
+    color:var(--ink-soft);
+    font-weight:500;
+    padding:6px 10px;
+    border-bottom:1px solid var(--ink);
+  }
+  tbody tr{border-bottom:1px solid var(--line-soft);}
+  tbody tr:hover{background:var(--paper-bright);}
+  tbody td{padding:13px 10px; font-size:13.5px; vertical-align:top;}
+  td.no{font-weight:600; white-space:nowrap; width:70px;}
+  td.title{font-family:'Space Grotesk', sans-serif; font-weight:500; font-size:14.5px;}
+  td.title .sub{display:block; font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft); font-weight:400; margin-top:2px;}
+  .badge{
+    display:inline-block;
+    font-size:10.5px;
+    padding:3px 8px;
+    border-radius:2px;
+    border:1px solid currentColor;
+    white-space:nowrap;
+  }
+  .badge.draft{color:var(--ink-soft);}
+  .badge.free{color:var(--teal); border-color:var(--teal);}
+  .badge.example{color:var(--rust); border-color:var(--rust);}
+  .badge.pro{color:var(--rust); border-color:var(--rust); background:rgba(196,67,43,0.08);}
+
+  tr.hide{display:none;}
+  tbody tr.row{cursor:pointer;}
+  tbody tr.row td.title{position:relative;}
+  tbody tr.row td.title::after{
+    content:'+';
+    position:absolute;
+    right:8px; top:13px;
+    font-family:'Space Grotesk',sans-serif;
+    color:var(--ink-soft);
+    font-size:13px;
+  }
+  tbody tr.row.open td.title::after{content:'–';}
+
+  tr.detail td{
+    padding:0 10px 20px;
+    border-bottom:1px solid var(--line-soft);
+  }
+  tr.detail.hide{display:none;}
+  .detail-inner{
+    display:grid;
+    grid-template-columns: 1fr 220px;
+    gap:16px;
+    border:1px solid var(--ink);
+    border-radius:2px;
+    background:var(--paper-bright);
+    overflow:hidden;
+  }
+  .detail-media{
+    background:repeating-linear-gradient(45deg, var(--line-soft), var(--line-soft) 6px, transparent 6px, transparent 12px);
+    border-right:1px solid var(--ink);
+    min-height:150px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-size:11.5px;
+    color:var(--ink-soft);
+    padding:14px;
+  }
+  .detail-info{padding:14px 16px 14px 0;}
+  .detail-info .row{font-size:12px; padding:6px 0; border-bottom:1px dashed var(--line-soft); line-height:1.6;}
+  .detail-info .k{color:var(--ink-soft); font-weight:600; margin-right:4px;}
+  .detail-info .k::after{content:':';}
+  .detail-info p{margin-top:4px;}
+  .detail-info p{font-size:12.5px; color:var(--ink-soft); margin-top:10px; line-height:1.55;}
+  @media (max-width:640px){
+    .detail-inner{grid-template-columns:1fr;}
+    .detail-media{border-right:none; border-bottom:1px solid var(--ink);}
+  }
+
+  /* ---------- Pro teaser ---------- */
+  .pro{
+    background:var(--ink);
+    color:var(--paper-bright);
+    padding:44px 0;
+  }
+  .pro .inner{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:24px;
+    flex-wrap:wrap;
+  }
+  .pro h3{font-size:22px; color:var(--paper-bright);}
+  .pro p{font-size:13.5px; color:#B9C0CC; max-width:42ch; margin-top:8px;}
+  .pro-cta{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    background:var(--rust);
+    color:#fff;
+    border:none;
+    padding:12px 20px;
+    border-radius:2px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+
+  /* ---------- Footer title block ---------- */
+  footer{border-top:2px solid var(--ink); background:var(--paper-bright);}
+  .fblock{
+    display:grid;
+    grid-template-columns: 2fr 1fr;
+    gap:0;
+    border:1px solid var(--ink);
+    margin:28px 0 20px;
+    border-radius:2px;
+    overflow:hidden;
+  }
+  .fblock > div{padding:14px 16px; border-right:1px solid var(--ink);}
+  .fblock > div:last-child{border-right:none;}
+  .fblock .k{font-size:10.5px; color:var(--ink-soft); margin-bottom:6px;}
+  .fblock a{font-size:13px; display:block; margin-bottom:4px; text-decoration:none;}
+  .fblock a:hover{color:var(--rust);}
+  .fine{font-size:11.5px; color:var(--ink-soft); padding-bottom:24px;}
+
+  @media (max-width:640px){
+    .cover h1{font-size:32px; max-width:none;}
+    .rev-block{grid-template-columns: repeat(2, 1fr);}
+    .fblock{grid-template-columns: 1fr;}
+    .fblock > div{border-right:none; border-bottom:1px solid var(--ink);}
+    .fblock > div:last-child{border-bottom:none;}
+    thead{display:none;}
+    tbody td{display:block; padding:4px 10px;}
+    td.no{width:auto;}
+    tbody tr{padding:10px 0;}
+  }
+
+  /* ---------- Decorative margin marks (mép giấy vẽ) ---------- */
+  .margin-mark{
+    position:fixed;
+    top:0; bottom:0;
+    width:1px;
+    background:var(--line);
+    z-index:50;
+    pointer-events:none;
+  }
+  .margin-mark.left{left:calc(50% - 560px);}
+  .margin-mark.right{right:calc(50% - 560px);}
+  .margin-mark::before, .margin-mark::after{
+    content:'';
+    position:absolute;
+    left:-5px;
+    width:11px; height:1px;
+    background:var(--ink);
+  }
+  .margin-mark::before{top:18px;}
+  .margin-mark::after{bottom:18px;}
+  @media (max-width:900px){
+    .margin-mark{display:none;}
+  }
+</style>
+</head>
+<body>
+<div class="margin-mark left"></div>
+<div class="margin-mark right"></div>
+
+<header>
+  <div class="wrap titleblock">
+    <div class="mark">TRẠM<span>·</span>BẢN VẼ</div>
+    <div class="header-right">
+      <nav id="filterNav">
+        <div class="nav-item" id="navItemLisp">
+          <button data-f="lisp" id="lispBtn">AUTOLISP</button>
+          <div class="dropdown" id="lispDropdown">
+            <a href="#" data-sub="">Tất cả AutoLISP</a>
+            <a href="#" data-sub="text">Lisp hiệu chỉnh Text</a>
+            <a href="#" data-sub="line">Lisp hiệu chỉnh Line</a>
+            <a href="#" data-sub="dim">Lisp hiệu chỉnh Dim</a>
+            <a href="#" data-sub="scale">Lisp chỉnh Scale nhóm</a>
+            <a href="#" data-sub="measure">Lisp đo &amp; tính toán</a>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<section class="cover wrap">
+  <h1 data-i18n="h1">Ít vẽ tay, nhiều việc xong</h1>
+  <p class="lede" data-i18n="lede">Clip ngắn về AutoLISP, rút ra từ công việc thật khi thiết kế kiến trúc và cầu thép — không lý thuyết dài dòng, xem xong dùng được ngay.</p>
+
+  <div class="rev-block">
+    <div><div class="k" data-i18n="k-status">TRẠNG THÁI</div><div class="v" data-i18n="v-status">Đang xây dựng</div></div>
+    <div><div class="k" data-i18n="k-count">SỐ CLIP</div><div class="v" data-i18n="v-count">0 / đang thêm</div></div>
+    <div><div class="k" data-i18n="k-update">CẬP NHẬT</div><div class="v">—</div></div>
+  </div>
+</section>
+
+<section class="index wrap">
+  <div class="index-head">
+    <h2 data-i18n="index-title" id="indexTitle">Danh mục bản vẽ / clip</h2>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:70px;" data-i18n="th-no">SỐ HIỆU</th>
+        <th data-i18n="th-title">TÊN CLIP</th>
+        <th style="width:110px;" data-i18n="th-cat">HẠNG MỤC</th>
+        <th style="width:120px;" data-i18n="th-status">TRẠNG THÁI</th>
+      </tr>
+    </thead>
+    <tbody id="rows">
+      <tr class="row" data-cat="lisp" data-sub="line" data-detail="d1">
+        <td class="no">L-01</td>
+        <td class="title"><span>LBRK — Line/Curve Break</span><span class="sub">cắt đoạn giữa thành nét đứt, chuyển sang layer riêng</span></td>
+        <td>LISP</td>
+        <td><span class="badge free">CÓ SẴN</span></td>
+      </tr>
+      <tr class="detail hide" id="d1" data-cat="lisp">
+        <td colspan="4">
+          <div class="detail-inner">
+            <div class="detail-media">Vùng đặt GIF / video demo</div>
+            <div class="detail-info">
+              <div class="row"><span class="k">Cú pháp</span><span>lbrk</span></div>
+              <div class="row"><span class="k">Hỗ trợ</span><span>Line, Pline, Circle, Ellipse, Spline, Arc</span></div>
+              <div class="row"><span class="k">Tải về</span><span>LBRK.vcl (file .lsp gốc gửi riêng khi cần)</span></div>
+              <p><span class="k">Thao tác</span> Chọn 1 đối tượng, pick 2 điểm cắt trên đối tượng — đoạn giữa được tách ra layer D-STR-STR3 (nét đứt), phần còn lại giữ nguyên thuộc tính gốc. Dựa theo ý tưởng Circle Break của Lee Mac.</p>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr class="row" data-cat="lisp" data-sub="dim" data-detail="d2">
+        <td class="no">L-02</td>
+        <td class="title"><span>DimAut — Đánh pitch trên Dim</span><span class="sub">tự động chia khoảng đều trên DIMENSION đã chọn</span></td>
+        <td>LISP</td>
+        <td><span class="badge free">CÓ SẴN</span></td>
+      </tr>
+      <tr class="detail hide" id="d2" data-cat="lisp">
+        <td colspan="4">
+          <div class="detail-inner">
+            <div class="detail-media">Vùng đặt GIF / video demo</div>
+            <div class="detail-info">
+              <div class="row"><span class="k">Cú pháp</span><span>dimaut</span></div>
+              <div class="row"><span class="k">Hỗ trợ</span><span>Đối tượng DIMENSION</span></div>
+              <div class="row"><span class="k">Tải về</span><span>DimAut.vcl (file .lsp gốc gửi riêng khi cần)</span></div>
+              <p><span class="k">Thao tác</span> Chọn dim cần chia — hộp thoại cho nhập số khoảng chia hoặc pitch mong muốn, lệnh tự tính và đánh dấu các điểm chia đều trên dim.</p>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr class="row" data-cat="lisp" data-sub="dim" data-detail="d3">
+        <td class="no">L-03</td>
+        <td class="title"><span>DIMSP7 — Dãn khoảng cách 2 hàng Dim</span><span class="sub">dán dim con cách dim chuẩn một khoảng cố định</span></td>
+        <td>LISP</td>
+        <td><span class="badge free">CÓ SẴN</span></td>
+      </tr>
+      <tr class="detail hide" id="d3" data-cat="lisp">
+        <td colspan="4">
+          <div class="detail-inner">
+            <div class="detail-media">Vùng đặt GIF / video demo</div>
+            <div class="detail-info">
+              <div class="row"><span class="k">Cú pháp</span><span>dimsp7</span></div>
+              <div class="row"><span class="k">Hỗ trợ</span><span>Đối tượng DIMENSION</span></div>
+              <div class="row"><span class="k">Tải về</span><span>DIMSP7.vcl (file .lsp gốc gửi riêng khi cần)</span></div>
+              <p><span class="k">Thao tác</span> Chọn 1 dim chuẩn (vd: dim tổng, màu đỏ), sau đó chọn các dim con (dim màu trắng) — lệnh tự dàn các dim con cách dim chuẩn khoảng L = 7 × tỷ lệ bản vẽ, dùng lệnh hệ thống DIMSPACE. Hệ số 7 chỉnh được trong code.</p>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr class="row" data-cat="lisp" data-sub="scale" data-detail="d4">
+        <td class="no">L-04</td>
+        <td class="title"><span>SCG — Scale nhiều nhóm, tự tìm điểm chuẩn</span><span class="sub">gom nhóm hình bao + line nối + text, scale đồng loạt</span></td>
+        <td>LISP</td>
+        <td><span class="badge free">CÓ SẴN</span></td>
+      </tr>
+      <tr class="detail hide" id="d4" data-cat="lisp">
+        <td colspan="4">
+          <div class="detail-inner">
+            <div class="detail-media">Vùng đặt GIF / video demo</div>
+            <div class="detail-info">
+              <div class="row"><span class="k">Cú pháp</span><span>scg</span></div>
+              <div class="row"><span class="k">Hỗ trợ</span><span>Circle/Ellipse/Polyline + Line nối + Text/MText</span></div>
+              <div class="row"><span class="k">Tải về</span><span>SCG.vcl (file .lsp gốc gửi riêng khi cần)</span></div>
+              <p><span class="k">Thao tác</span> Chọn tất cả đối tượng của các nhóm một lần — lệnh tự nhận diện từng nhóm (hình bao, line nối, text bên trong), tự tìm điểm chuẩn (giao điểm line với hình bao, hoặc đầu line gần nhất), rồi scale đồng loạt tất cả nhóm quanh đúng điểm chuẩn riêng của từng nhóm.</p>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr class="row" data-cat="lisp" data-sub="scale" data-detail="d5">
+        <td class="no">L-05</td>
+        <td class="title"><span>SCG2 — Scale nhóm, không cần line nối</span><span class="sub">dùng khi nhóm chỉ có hình bao + text, chọn tay 1 điểm mốc</span></td>
+        <td>LISP</td>
+        <td><span class="badge free">CÓ SẴN</span></td>
+      </tr>
+      <tr class="detail hide" id="d5" data-cat="lisp">
+        <td colspan="4">
+          <div class="detail-inner">
+            <div class="detail-media">Vùng đặt GIF / video demo</div>
+            <div class="detail-info">
+              <div class="row"><span class="k">Cú pháp</span><span>scg2</span></div>
+              <div class="row"><span class="k">Hỗ trợ</span><span>Circle/Ellipse/Polyline + Text/MText (không cần line nối)</span></div>
+              <div class="row"><span class="k">Tải về</span><span>SCG2.vcl (file .lsp gốc gửi riêng khi cần)</span></div>
+              <p><span class="k">Thao tác</span> Biến thể của SCG — dùng khi các nhóm không có line nối điểm chuẩn. Pick 1 điểm trên nhóm "chuẩn", lệnh tự suy ra điểm tương ứng trên các nhóm còn lại theo góc tương đối so với tâm từng hình bao, rồi scale đồng loạt.</p>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr class="row" data-cat="lisp" data-sub="measure" data-detail="d6">
+        <td class="no">L-06</td>
+        <td class="title"><span>LEN2P — Chiều dài 2 điểm trên đối tượng</span><span class="sub">đo khoảng cách theo đường cong giữa 2 điểm bất kỳ</span></td>
+        <td>LISP</td>
+        <td><span class="badge free">CÓ SẴN</span></td>
+      </tr>
+      <tr class="detail hide" id="d6" data-cat="lisp">
+        <td colspan="4">
+          <div class="detail-inner">
+            <div class="detail-media">Vùng đặt GIF / video demo</div>
+            <div class="detail-info">
+              <div class="row"><span class="k">Cú pháp</span><span>len2p</span></div>
+              <div class="row"><span class="k">Hỗ trợ</span><span>Line, Pline, Circle, Ellipse, Spline, Arc</span></div>
+              <div class="row"><span class="k">Tải về</span><span>LEN2P.vcl (file .lsp gốc gửi riêng khi cần)</span></div>
+              <p><span class="k">Thao tác</span> Chọn 1 đối tượng dạng đường, pick 2 điểm bất kỳ trên đối tượng — lệnh tính chiều dài đoạn giữa 2 điểm theo đúng đường cong (không phải đường thẳng nối 2 điểm), ghi kết quả ra text trên layer D-WORK.</p>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr class="row" data-cat="lisp" data-sub="measure" data-detail="d7">
+        <td class="no">L-07</td>
+        <td class="title"><span>AVGLEN — Chiều dài trung bình</span><span class="sub">tính chiều dài trung bình của nhiều đối tượng chọn cùng lúc</span></td>
+        <td>LISP</td>
+        <td><span class="badge free">CÓ SẴN</span></td>
+      </tr>
+      <tr class="detail hide" id="d7" data-cat="lisp">
+        <td colspan="4">
+          <div class="detail-inner">
+            <div class="detail-media">Vùng đặt GIF / video demo</div>
+            <div class="detail-info">
+              <div class="row"><span class="k">Cú pháp</span><span>avglen</span></div>
+              <div class="row"><span class="k">Hỗ trợ</span><span>Line, Arc, Pline, Circle, Ellipse, Spline</span></div>
+              <div class="row"><span class="k">Tải về</span><span>AVGLEN.vcl (file .lsp gốc gửi riêng khi cần)</span></div>
+              <p><span class="k">Thao tác</span> Chọn nhiều đối tượng cùng lúc — lệnh tính tổng chiều dài, số đối tượng hợp lệ và chiều dài trung bình, báo kết quả ra command line.</p>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr class="row" data-cat="lisp" data-sub="measure" data-detail="d8">
+        <td class="no">L-08</td>
+        <td class="title"><span>KB — Thể hiện độ dốc i%</span><span class="sub">vẽ ký hiệu mũi tên dốc kèm giá trị % giữa 2 điểm</span></td>
+        <td>LISP</td>
+        <td><span class="badge free">CÓ SẴN</span></td>
+      </tr>
+      <tr class="detail hide" id="d8" data-cat="lisp">
+        <td colspan="4">
+          <div class="detail-inner">
+            <div class="detail-media">Vùng đặt GIF / video demo</div>
+            <div class="detail-info">
+              <div class="row"><span class="k">Cú pháp</span><span>kb</span></div>
+              <div class="row"><span class="k">Hỗ trợ</span><span>Pick 2 điểm bất kỳ trên một đường</span></div>
+              <div class="row"><span class="k">Tải về</span><span>KB.vcl (file .lsp gốc gửi riêng khi cần)</span></div>
+              <p><span class="k">Thao tác</span> Chọn 2 điểm trên đường dốc — lệnh tự vẽ ký hiệu mũi tên chỉ hướng dốc, tính và ghi giá trị độ dốc i% tại đúng vị trí.</p>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr class="row" data-cat="lisp" data-sub="text" data-detail="d9">
+        <td class="no">L-09</td>
+        <td class="title"><span>(Chưa có clip)</span><span class="sub">chưa có lisp nào cho mục Text — thêm sau</span></td>
+        <td>LISP</td>
+        <td><span class="badge draft">CHƯA CÓ</span></td>
+      </tr>
+      <tr class="detail hide" id="d9" data-cat="lisp">
+        <td colspan="4"><div class="detail-inner"><div class="detail-media">Chưa có demo</div><div class="detail-info"><p>Điền cú pháp, link tải và mô tả khi có nội dung thật.</p></div></div></td>
+      </tr>
+
+      <!-- Tạm ẩn — mở lại khi thêm tab CAD
+      <tr class="row" data-cat="cad" data-detail="d3">
+        <td class="no">C-01</td>
+        <td class="title">(Chưa có clip)<span class="sub">ví dụ: mẹo layer, block, xuất DXF trong IJCAD</span></td>
+        <td>CAD</td>
+        <td><span class="badge draft">CHƯA CÓ</span></td>
+      </tr>
+      <tr class="detail hide" id="d3" data-cat="cad">
+        <td colspan="4"><div class="detail-inner"><div class="detail-media">Chưa có demo</div><div class="detail-info"><p>Điền cú pháp, link tải và mô tả khi có nội dung thật.</p></div></div></td>
+      </tr>
+      -->
+
+      <!-- Tạm ẩn — mở lại khi thêm tab VBA
+      <tr class="row" data-cat="vba" data-detail="d4">
+        <td class="no">V-01</td>
+        <td class="title">(Chưa có clip)<span class="sub">ví dụ: macro tự động hóa bản vẽ / file Excel</span></td>
+        <td>VBA</td>
+        <td><span class="badge draft">CHƯA CÓ</span></td>
+      </tr>
+      <tr class="detail hide" id="d4" data-cat="vba">
+        <td colspan="4"><div class="detail-inner"><div class="detail-media">Chưa có demo</div><div class="detail-info"><p>Điền cú pháp, link tải và mô tả khi có nội dung thật.</p></div></div></td>
+      </tr>
+      -->
+
+      <!-- Tạm ẩn — mở lại khi thêm tab Excel
+      <tr class="row" data-cat="excel" data-detail="d5">
+        <td class="no">E-01</td>
+        <td class="title">(Chưa có clip)<span class="sub">ví dụ: hàm tính toán vật liệu, bảng kiểm tra</span></td>
+        <td>EXCEL</td>
+        <td><span class="badge draft">CHƯA CÓ</span></td>
+      </tr>
+      <tr class="detail hide" id="d5" data-cat="excel">
+        <td colspan="4"><div class="detail-inner"><div class="detail-media">Chưa có demo</div><div class="detail-info"><p>Điền cú pháp, link tải và mô tả khi có nội dung thật.</p></div></div></td>
+      </tr>
+      -->
+    </tbody>
+  </table>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fblock">
+      <div>
+        <div class="k" data-i18n="f-contact">LIÊN HỆ</div>
+        <a href="#" data-i18n="f-email">Email (thêm sau)</a>
+        <a href="#" data-i18n="f-group">Group / Cộng đồng (thêm sau)</a>
+      </div>
+      <div>
+        <div class="k" data-i18n="f-copyright">BẢN QUYỀN</div>
+        <a href="#" style="pointer-events:none;">© 2026 Trạm Bản Vẽ</a>
+      </div>
+    </div>
+    <p class="fine" data-i18n="f-note">Đây là bản demo khung trang — thay thế tên trang, logo, nội dung clip và liên kết thật trước khi đưa lên web chính thức.</p>
+  </div>
+</footer>
+
+<div class="lang-float" id="langFloat">
+  <div class="lang-menu" id="langMenu">
+    <button data-lang="vi" class="active">Tiếng Việt</button>
+    <button data-lang="en">English</button>
+    <button data-lang="ja">日本語</button>
+  </div>
+  <button class="lang-pill" id="langPillBtn">
+    <span class="globe">🌐</span>
+    <span id="langLabel">Tiếng Việt</span>
+    <span class="caret">▾</span>
+  </button>
+</div>
+
+<script>
+  const buttons = document.querySelectorAll('#filterNav button');
+  const mainRows = document.querySelectorAll('#rows tr.row');
+
+  function applyFilter(f){
+    mainRows.forEach(r=>{
+      const show = (f===null || r.dataset.cat===f);
+      r.classList.toggle('hide', !show);
+      const detail = document.getElementById(r.dataset.detail);
+      if(!show && detail) detail.classList.add('hide');
+      if(!show) r.classList.remove('open');
+    });
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const already = btn.classList.contains('active');
+      buttons.forEach(b=>b.classList.remove('active'));
+      if(already){
+        applyFilter(null); // bấm lại tab đang chọn -> hiện tất cả
+      } else {
+        btn.classList.add('active');
+        applyFilter(btn.dataset.f);
+      }
+    });
+  });
+
+  mainRows.forEach(r=>{
+    r.addEventListener('click', ()=>{
+      const detail = document.getElementById(r.dataset.detail);
+      const opening = detail.classList.contains('hide');
+      detail.classList.toggle('hide', !opening);
+      r.classList.toggle('open', opening);
+    });
+  });
+
+  applyFilter(null);
+
+  /* ---------- AutoLISP dropdown: click to open/stay, filter table by submenu ---------- */
+  const lispBtn = document.getElementById('lispBtn');
+  const lispDropdown = document.getElementById('lispDropdown');
+  const subLinks = lispDropdown.querySelectorAll('a[data-sub]');
+  const indexTitle = document.getElementById('indexTitle');
+  const indexTable = document.querySelector('.index table tbody');
+  let emptyRow = null;
+
+  const subNames = {
+    '': 'Danh mục bản vẽ / clip',
+    'text': 'Lisp hiệu chỉnh Text',
+    'line': 'Lisp hiệu chỉnh Line',
+    'dim': 'Lisp hiệu chỉnh Dim',
+    'scale': 'Lisp chỉnh Scale nhóm',
+    'measure': 'Lisp đo & tính toán'
+  };
+
+  lispBtn.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    lispDropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', ()=>{
+    lispDropdown.classList.remove('open');
+  });
+  lispDropdown.addEventListener('click', (e)=> e.stopPropagation());
+
+  function applySubFilter(sub){
+    let visible = 0;
+    mainRows.forEach(r=>{
+      const match = (sub === '' || r.dataset.sub === sub);
+      r.classList.toggle('hide', !match);
+      const detail = document.getElementById(r.dataset.detail);
+      if(!match && detail) detail.classList.add('hide');
+      if(!match) r.classList.remove('open');
+      if(match) visible++;
+    });
+
+    if(emptyRow) emptyRow.remove();
+    if(visible === 0){
+      emptyRow = document.createElement('tr');
+      emptyRow.className = 'empty-row';
+      emptyRow.innerHTML = '<td colspan="4">Chưa có clip nào cho mục này — sẽ bổ sung sau.</td>';
+      indexTable.appendChild(emptyRow);
+    }
+
+    indexTitle.textContent = subNames[sub];
+    subLinks.forEach(a=> a.classList.toggle('active', a.dataset.sub === sub));
+  }
+
+  subLinks.forEach(a=>{
+    a.addEventListener('click', (e)=>{
+      e.preventDefault();
+      applySubFilter(a.dataset.sub);
+      lispDropdown.classList.remove('open');
+    });
+  });
+
+  /* ---------- Language switch ---------- */
+  const translations = {
+    vi: {
+      'h1': 'Ít vẽ tay, nhiều việc xong',
+      'lede': 'Clip ngắn về AutoLISP, rút ra từ công việc thật khi thiết kế kiến trúc và cầu thép — không lý thuyết dài dòng, xem xong dùng được ngay.',
+      'k-status': 'TRẠNG THÁI', 'v-status': 'Đang xây dựng',
+      'k-count': 'SỐ CLIP', 'v-count': '0 / đang thêm',
+      'k-update': 'CẬP NHẬT',
+      'index-title': 'Danh mục bản vẽ / clip',
+      'th-no': 'SỐ HIỆU', 'th-title': 'TÊN CLIP', 'th-cat': 'HẠNG MỤC', 'th-status': 'TRẠNG THÁI',
+      'row1-title': 'Ví dụ: Lệnh AutoLISP đo nhanh chiều dài dầm',
+      'row1-sub': 'bấm vào dòng để xem khung demo — minh họa cách trình bày, chỉnh lại nội dung thật',
+      'badge-example': 'VÍ DỤ MẪU',
+      'row2-title': '(Chưa có clip)',
+      'row2-sub': 'thêm tiêu đề clip LISP tiếp theo tại đây',
+      'badge-draft': 'CHƯA CÓ',
+      'f-contact': 'LIÊN HỆ', 'f-email': 'Email (thêm sau)', 'f-group': 'Group / Cộng đồng (thêm sau)',
+      'f-copyright': 'BẢN QUYỀN',
+      'f-note': 'Đây là bản demo khung trang — thay thế tên trang, logo, nội dung clip và liên kết thật trước khi đưa lên web chính thức.'
+    },
+    en: {
+      'h1': 'Less drawing by hand, more done',
+      'lede': 'Short AutoLISP clips, pulled from real architecture and steel-bridge design work — no long theory, usable right after watching.',
+      'k-status': 'STATUS', 'v-status': 'Under construction',
+      'k-count': 'CLIPS', 'v-count': '0 / adding soon',
+      'k-update': 'UPDATED',
+      'index-title': 'Clip index',
+      'th-no': 'NO.', 'th-title': 'TITLE', 'th-cat': 'CATEGORY', 'th-status': 'STATUS',
+      'row1-title': 'Example: AutoLISP command for quick beam length',
+      'row1-sub': 'click the row to open the demo panel — sample layout, replace with real content',
+      'badge-example': 'SAMPLE',
+      'row2-title': '(No clip yet)',
+      'row2-sub': 'add the next AutoLISP clip title here',
+      'badge-draft': 'DRAFT',
+      'f-contact': 'CONTACT', 'f-email': 'Email (add later)', 'f-group': 'Group / Community (add later)',
+      'f-copyright': 'COPYRIGHT',
+      'f-note': 'This is a page scaffold demo — replace the site name, logo, clip content and real links before publishing.'
+    },
+    ja: {
+      'h1': '手描きを減らして、作業を進める',
+      'lede': 'AutoLISPの短いクリップ集。建築・鋼橋の実務から抜粋 — 長い理論なし、見てすぐ使える内容です。',
+      'k-status': 'ステータス', 'v-status': '構築中',
+      'k-count': 'クリップ数', 'v-count': '0 / 追加予定',
+      'k-update': '更新日',
+      'index-title': 'クリップ一覧',
+      'th-no': '番号', 'th-title': 'タイトル', 'th-cat': '分類', 'th-status': '状態',
+      'row1-title': '例：部材の長さを素早く測るAutoLISPコマンド',
+      'row1-sub': '行をクリックするとデモが開きます — サンプル表示、実際の内容に差し替えてください',
+      'badge-example': 'サンプル',
+      'row2-title': '（クリップ未登録）',
+      'row2-sub': '次のAutoLISPクリップのタイトルをここに追加',
+      'badge-draft': '未登録',
+      'f-contact': '連絡先', 'f-email': 'メール（後で追加）', 'f-group': 'グループ／コミュニティ（後で追加）',
+      'f-copyright': '著作権',
+      'f-note': 'これはページの雛形デモです — 公開前にサイト名・ロゴ・クリップ内容・実際のリンクに差し替えてください。'
+    }
+  };
+
+  const langButtons = document.querySelectorAll('#langMenu button');
+  const langPillBtn = document.getElementById('langPillBtn');
+  const langMenu = document.getElementById('langMenu');
+  const langLabel = document.getElementById('langLabel');
+  const langNames = { vi: 'Tiếng Việt', en: 'English', ja: '日本語' };
+
+  function applyLang(lang){
+    const dict = translations[lang];
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
+      const key = el.getAttribute('data-i18n');
+      if(dict[key] !== undefined) el.textContent = dict[key];
+    });
+    document.documentElement.lang = lang;
+    langLabel.textContent = langNames[lang];
+  }
+
+  langPillBtn.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    langMenu.classList.toggle('open');
+  });
+  document.addEventListener('click', ()=>{
+    langMenu.classList.remove('open');
+  });
+  langMenu.addEventListener('click', (e)=> e.stopPropagation());
+
+  langButtons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      langButtons.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      applyLang(btn.dataset.lang);
+      langMenu.classList.remove('open');
+    });
+  });
+</script>
+
+</body>
+</html>
