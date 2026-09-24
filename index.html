@@ -406,12 +406,12 @@
         <div class="nav-item" id="navItemLisp">
           <button data-f="lisp" id="lispBtn">AUTOLISP</button>
           <div class="dropdown" id="lispDropdown">
-            <a href="#" data-sub="">Tất cả AutoLISP</a>
-            <a href="#" data-sub="text">Lisp hiệu chỉnh Text</a>
-            <a href="#" data-sub="line">Lisp hiệu chỉnh Line</a>
-            <a href="#" data-sub="dim">Lisp hiệu chỉnh Dim</a>
-            <a href="#" data-sub="scale">Lisp chỉnh Scale nhóm</a>
-            <a href="#" data-sub="measure">Lisp đo &amp; tính toán</a>
+            <a href="#" data-sub="" data-i18n="nav-all">Tất cả AutoLISP</a>
+            <a href="#" data-sub="text" data-i18n="nav-text">Lisp hiệu chỉnh Text</a>
+            <a href="#" data-sub="line" data-i18n="nav-line">Lisp hiệu chỉnh Line</a>
+            <a href="#" data-sub="dim" data-i18n="nav-dim">Lisp hiệu chỉnh Dim</a>
+            <a href="#" data-sub="scale" data-i18n="nav-scale">Lisp chỉnh Scale nhóm</a>
+            <a href="#" data-sub="measure" data-i18n="nav-measure">Lisp đo &amp; tính toán</a>
           </div>
         </div>
       </nav>
@@ -722,15 +722,13 @@
   const indexTitle = document.getElementById('indexTitle');
   const indexTable = document.querySelector('.index table tbody');
   let emptyRow = null;
+  let currentSub = '';
+  let currentLang = 'vi';
 
-  const subNames = {
-    '': 'Danh mục bản vẽ / clip',
-    'text': 'Lisp hiệu chỉnh Text',
-    'line': 'Lisp hiệu chỉnh Line',
-    'dim': 'Lisp hiệu chỉnh Dim',
-    'scale': 'Lisp chỉnh Scale nhóm',
-    'measure': 'Lisp đo & tính toán'
-  };
+  function subTitle(lang, sub){
+    const t = translations[lang];
+    return sub === '' ? t['index-title'] : t['nav-' + sub];
+  }
 
   lispBtn.addEventListener('click', (e)=>{
     e.stopPropagation();
@@ -742,6 +740,7 @@
   lispDropdown.addEventListener('click', (e)=> e.stopPropagation());
 
   function applySubFilter(sub){
+    currentSub = sub;
     let visible = 0;
     mainRows.forEach(r=>{
       const match = (sub === '' || r.dataset.sub === sub);
@@ -756,11 +755,14 @@
     if(visible === 0){
       emptyRow = document.createElement('tr');
       emptyRow.className = 'empty-row';
-      emptyRow.innerHTML = '<td colspan="4">Chưa có clip nào cho mục này — sẽ bổ sung sau.</td>';
+      const td = document.createElement('td');
+      td.colSpan = 4;
+      td.textContent = translations[currentLang]['empty-row'];
+      emptyRow.appendChild(td);
       indexTable.appendChild(emptyRow);
     }
 
-    indexTitle.textContent = subNames[sub];
+    indexTitle.textContent = subTitle(currentLang, sub);
     subLinks.forEach(a=> a.classList.toggle('active', a.dataset.sub === sub));
   }
 
@@ -821,7 +823,14 @@
       'sub-kb': 'Vẽ ký hiệu mũi tên dốc kèm giá trị % giữa 2 điểm',
       'action-kb': 'Chọn 2 điểm trên đường dốc — lệnh tự vẽ ký hiệu mũi tên chỉ hướng dốc, tính và ghi giá trị độ dốc i% tại đúng vị trí.',
       'title-t01': '(Chưa có clip)',
-      'sub-t01': 'Chưa có lisp nào cho mục Text — thêm sau'
+      'sub-t01': 'Chưa có lisp nào cho mục Text — thêm sau',
+      'nav-all': 'Tất cả AutoLISP',
+      'nav-text': 'Lisp hiệu chỉnh Text',
+      'nav-line': 'Lisp hiệu chỉnh Line',
+      'nav-dim': 'Lisp hiệu chỉnh Dim',
+      'nav-scale': 'Lisp chỉnh Scale nhóm',
+      'nav-measure': 'Lisp đo & tính toán',
+      'empty-row': 'Chưa có clip nào cho mục này — sẽ bổ sung sau.'
     },
     en: {
       'h1': 'Less drawing by hand, more done',
@@ -870,7 +879,14 @@
       'sub-kb': 'Draws a slope arrow with the % value between 2 points',
       'action-kb': 'Select 2 points on a sloped line — the command draws a directional slope arrow and calculates/writes the slope value i% at that spot.',
       'title-t01': '(No clip yet)',
-      'sub-t01': 'No lisp for the Text category yet — coming later'
+      'sub-t01': 'No lisp for the Text category yet — coming later',
+      'nav-all': 'All AutoLISP',
+      'nav-text': 'Text-editing lisp',
+      'nav-line': 'Line-editing lisp',
+      'nav-dim': 'Dim-editing lisp',
+      'nav-scale': 'Group scaling lisp',
+      'nav-measure': 'Measure & calculate lisp',
+      'empty-row': 'No clips for this category yet — coming later.'
     },
     ja: {
       'h1': '手描きを減らして、作業を進める',
@@ -919,7 +935,14 @@
       'sub-kb': '2点間に勾配矢印と%表示を作図',
       'action-kb': '勾配のある線上で2点を選択 — 勾配方向の矢印を自動作図し、勾配値i%を計算してその場に記入。',
       'title-t01': '（まだクリップなし）',
-      'sub-t01': 'Text分類のlispはまだありません — 追って追加予定'
+      'sub-t01': 'Text分類のlispはまだありません — 追って追加予定',
+      'nav-all': 'AutoLISP すべて',
+      'nav-text': 'Text編集系lisp',
+      'nav-line': 'Line編集系lisp',
+      'nav-dim': 'Dim編集系lisp',
+      'nav-scale': 'グループScale系lisp',
+      'nav-measure': '計測・計算系lisp',
+      'empty-row': 'この分類のクリップはまだありません — 追って追加予定。'
     }
   };
 
@@ -938,6 +961,9 @@
       if(el.classList.contains('detail-media') && el.querySelector('video')) return;
       el.textContent = dict[key];
     });
+    currentLang = lang;
+    indexTitle.textContent = subTitle(lang, currentSub);
+    if(emptyRow) emptyRow.querySelector('td').textContent = dict['empty-row'];
     document.documentElement.lang = lang;
     langLabel.textContent = langNames[lang];
   }
