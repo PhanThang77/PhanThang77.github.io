@@ -262,6 +262,7 @@
   .badge.pro{color:var(--rust); border-color:var(--rust); background:rgba(196,67,43,0.08);}
 
   tr.hide{display:none;}
+  .view-hide{display:none;}
   tbody tr.row{cursor:pointer;}
   tbody tr.row td.title{position:relative;}
   tbody tr.row td.title::after{
@@ -273,6 +274,8 @@
     font-size:13px;
   }
   tbody tr.row.open td.title::after{content:'–';}
+  .pdf-features tbody tr.row{cursor:default;}
+  .pdf-features tbody tr.row td.title::after{content:none;}
 
   tr.detail td{
     padding:0 10px 20px;
@@ -305,6 +308,22 @@
   .detail-info .k{color:var(--ink-soft); font-weight:600; margin-right:4px;}
   .detail-info .k::after{content:':';}
   .detail-info .row:first-of-type span:not(.k){text-transform:uppercase; font-weight:600;}
+
+  /* ---------- PDF Compare Pro: khung video demo lớn ---------- */
+  .pdf-demo-media{
+    background:repeating-linear-gradient(45deg, var(--line-soft), var(--line-soft) 6px, transparent 6px, transparent 12px);
+    border:1px solid var(--ink);
+    border-radius:2px;
+    min-height:320px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    padding:20px;
+  }
+  .pdf-demo-media video{max-width:100%; max-height:420px; border-radius:2px;}
   .detail-info p{margin-top:4px;}
   .detail-info p{font-size:12.5px; color:var(--ink-soft); margin-top:10px; line-height:1.55;}
   @media (max-width:640px){
@@ -341,6 +360,40 @@
 
   /* ---------- Footer title block ---------- */
   footer{border-top:2px solid var(--ink); background:var(--paper-bright);}
+
+  /* ---------- PDF Compare Pro: CTA box ---------- */
+  .pdf-cta{padding:20px 0 56px;}
+  .pdf-cta-box{
+    border:1px solid var(--ink);
+    border-radius:2px;
+    background:var(--paper-bright);
+    padding:22px 26px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  .pdf-cta-box h3{font-size:18px;}
+  .pdf-cta-box p{font-size:13px; color:var(--ink-soft); margin-top:6px;}
+  .pdf-cta-btn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    background:var(--rust);
+    color:#fff;
+    padding:12px 18px;
+    border-radius:2px;
+    text-decoration:none;
+    white-space:nowrap;
+  }
+  .pdf-cta-btn:hover{opacity:0.9;}
+  .pdf-cta-btns{display:flex; gap:10px; flex-wrap:wrap;}
+  .pdf-cta-btn-outline{
+    background:transparent;
+    border:1px solid var(--ink);
+    color:var(--ink);
+  }
+  .pdf-cta-btn-outline:hover{background:var(--line-soft); opacity:1;}
   .fblock{
     display:grid;
     grid-template-columns: 2fr 1fr;
@@ -369,7 +422,7 @@
     tbody tr{padding:10px 0;}
   }
 
-  /* ---------- Decorative margin marks (mép giấy vẽ) ---------- */
+  /* ---------- Decorative margin marks (mép giấy vẽ, kiểu vạch lý trình) ---------- */
   .margin-mark{
     position:fixed;
     top:0; bottom:0;
@@ -389,14 +442,41 @@
   }
   .margin-mark::before{top:18px;}
   .margin-mark::after{bottom:18px;}
+
+  /* vạch chia nhỏ (minor tick) lặp lại mỗi 20px, vạch lớn (major tick) mỗi 100px */
+  .margin-ticks{
+    position:absolute;
+    top:0; left:-4px;
+    width:9px; height:100%;
+    background-image:
+      repeating-linear-gradient(to bottom, var(--line) 0 1px, transparent 1px 20px),
+      repeating-linear-gradient(to bottom, var(--ink) 0 1px, transparent 1px 100px);
+    background-size: 4px 20px, 9px 100px;
+    background-position: left top, right top;
+    background-repeat: repeat-y;
+    opacity:0.8;
+  }
+  .margin-label{
+    position:absolute;
+    left:-19px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:9.5px;
+    letter-spacing:0.03em;
+    color:var(--ink-soft);
+    writing-mode:vertical-rl;
+    transform:rotate(180deg);
+    white-space:nowrap;
+    opacity:0.75;
+  }
   @media (max-width:900px){
     .margin-mark{display:none;}
   }
+
 </style>
 </head>
 <body>
-<div class="margin-mark left"></div>
-<div class="margin-mark right"></div>
+<div class="margin-mark left"><div class="margin-ticks"></div></div>
+<div class="margin-mark right"><div class="margin-ticks"></div></div>
 
 <header>
   <div class="wrap titleblock">
@@ -414,11 +494,13 @@
             <a href="#" data-sub="measure" data-i18n="nav-measure">Lisp đo &amp; tính toán</a>
           </div>
         </div>
+        <button id="pdfCompareBtn">PDF COMPARE PRO</button>
       </nav>
     </div>
   </div>
 </header>
 
+<div id="viewLisp">
 <section class="cover wrap">
   <h1 data-i18n="h1">Ít vẽ tay, nhiều việc xong</h1>
   <p class="lede" data-i18n="lede">Clip ngắn về AutoLISP, rút ra từ công việc thật khi thiết kế kiến trúc và cầu thép — không lý thuyết dài dòng, xem xong dùng được ngay.</p>
@@ -646,6 +728,82 @@
     </tbody>
   </table>
 </section>
+</div>
+
+<div id="viewPdf" class="view-hide">
+<section class="cover wrap">
+  <h1 data-i18n="pdf-h1">PDF Compare Pro</h1>
+  <p class="lede" data-i18n="pdf-lede">So sánh nhanh 2 bản vẽ PDF (bản cũ / bản mới), tự động tô màu phần thay đổi — dựng để phục vụ đúng công việc kiểm tra bản vẽ thiết kế cầu thép, không phải công cụ so PDF chung chung.</p>
+
+  <div class="rev-block">
+    <div><div class="k" data-i18n="pdf-k-format">HÌNH THỨC</div><div class="v" data-i18n="pdf-v-format">Phần mềm tải về (.exe)</div></div>
+    <div><div class="k" data-i18n="pdf-k-platform">NỀN TẢNG</div><div class="v" data-i18n="pdf-v-platform">Windows, chạy offline</div></div>
+    <div><div class="k" data-i18n="pdf-k-price">GIÁ</div><div class="v" data-i18n="pdf-v-price">Liên hệ</div></div>
+  </div>
+</section>
+
+<section class="index wrap">
+  <div class="index-head">
+    <h2 data-i18n="pdf-demo-title">Video demo</h2>
+  </div>
+  <div class="pdf-demo-media" data-video="pdfcompare-demo" data-i18n="media-placeholder">Vùng đặt GIF / video demo</div>
+</section>
+
+<section class="index wrap pdf-features">
+  <div class="index-head">
+    <h2 data-i18n="pdf-features-title">Tính năng chính</h2>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:70px;" data-i18n="th-no">SỐ HIỆU</th>
+        <th data-i18n="pdf-th-feature">TÊN TÍNH NĂNG</th>
+        <th style="width:120px;" data-i18n="th-status">TRẠNG THÁI</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="row">
+        <td class="no">F-01</td>
+        <td class="title"><span data-i18n="pdf-f1-title">Side by Side</span><span class="sub" data-i18n="pdf-f1-sub">Đặt 2 bản PDF cạnh nhau để đối chiếu trực tiếp</span></td>
+        <td><span class="badge free" data-i18n="badge-free">CÓ SẴN</span></td>
+      </tr>
+      <tr class="row">
+        <td class="no">F-02</td>
+        <td class="title"><span data-i18n="pdf-f2-title">Overlay</span><span class="sub" data-i18n="pdf-f2-sub">Chồng 2 bản vẽ lên nhau, lệch màu để thấy sai khác</span></td>
+        <td><span class="badge free" data-i18n="badge-free">CÓ SẴN</span></td>
+      </tr>
+      <tr class="row">
+        <td class="no">F-03</td>
+        <td class="title"><span data-i18n="pdf-f3-title">Highlight</span><span class="sub" data-i18n="pdf-f3-sub">Tự động tô màu riêng phần nét vẽ / chữ bị thêm, xóa, sửa</span></td>
+        <td><span class="badge free" data-i18n="badge-free">CÓ SẴN</span></td>
+      </tr>
+      <tr class="row">
+        <td class="no">F-04</td>
+        <td class="title"><span data-i18n="pdf-f4-title">Zoom chi tiết</span><span class="sub" data-i18n="pdf-f4-sub">Phóng to từng vùng thay đổi, ghi chú (memo) trực tiếp lên kết quả</span></td>
+        <td><span class="badge free" data-i18n="badge-free">CÓ SẴN</span></td>
+      </tr>
+      <tr class="row">
+        <td class="no">F-05</td>
+        <td class="title"><span data-i18n="pdf-f5-title">Xuất kết quả PDF</span><span class="sub" data-i18n="pdf-f5-sub">Lưu lại bản so sánh (kèm highlight) thành file PDF để gửi đi</span></td>
+        <td><span class="badge free" data-i18n="badge-free">CÓ SẴN</span></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="pdf-cta wrap">
+  <div class="pdf-cta-box">
+    <div>
+      <h3 data-i18n="pdf-cta-title">Quan tâm sản phẩm?</h3>
+      <p data-i18n="pdf-cta-sub">Liên hệ để được tư vấn, hoặc tải bản dùng thử về xem trước (cần license.dat để mở khóa đầy đủ).</p>
+    </div>
+    <div class="pdf-cta-btns">
+      <a href="https://drive.google.com/uc?export=download&id=1XA5vPbbpaqhEdx_vhKx76zFV7KEDVGgU" class="pdf-cta-btn pdf-cta-btn-outline" data-i18n="pdf-cta-trial">TẢI BẢN DÙNG THỬ</a>
+      <a href="#" class="pdf-cta-btn" data-i18n="pdf-cta-btn">LIÊN HỆ MUA (thêm email/Zalo sau)</a>
+    </div>
+  </div>
+</section>
+</div>
 
 <footer>
   <div class="wrap">
@@ -678,7 +836,7 @@
 </div>
 
 <script>
-  const buttons = document.querySelectorAll('#filterNav button');
+  const buttons = document.querySelectorAll('#filterNav button[data-f]');
   const mainRows = document.querySelectorAll('#rows tr.row');
 
   function applyFilter(f){
@@ -690,6 +848,24 @@
       if(!show) r.classList.remove('open');
     });
   }
+
+  /* ---------- Sinh số lý trình dọc 2 vạch lề (kiểu bản vẽ cầu) ---------- */
+  function drawMarginLabels(){
+    document.querySelectorAll('.margin-mark').forEach((mark)=>{
+      mark.querySelectorAll('.margin-label').forEach((n)=> n.remove());
+      const h = Math.max(document.documentElement.scrollHeight, window.innerHeight);
+      const step = 100; // trùng chu kỳ vạch lớn trong CSS
+      for(let y = step; y < h - 40; y += step){
+        const label = document.createElement('div');
+        label.className = 'margin-label';
+        label.style.top = y + 'px';
+        label.textContent = String(y).padStart(4, '0');
+        mark.appendChild(label);
+      }
+    });
+  }
+  drawMarginLabels();
+  window.addEventListener('resize', drawMarginLabels);
 
   buttons.forEach(btn=>{
     btn.addEventListener('click', ()=>{
@@ -714,6 +890,31 @@
   });
 
   applyFilter(null);
+
+  /* ---------- Chuyển view: AUTOLISP <-> PDF COMPARE PRO ---------- */
+  const viewLisp = document.getElementById('viewLisp');
+  const viewPdf = document.getElementById('viewPdf');
+  const pdfCompareBtn = document.getElementById('pdfCompareBtn');
+  const lispBtnEl = document.getElementById('lispBtn');
+
+  function showView(name){
+    if(name === 'pdf'){
+      viewLisp.classList.add('view-hide');
+      viewPdf.classList.remove('view-hide');
+      pdfCompareBtn.classList.add('active');
+      lispBtnEl.classList.remove('active');
+    } else {
+      viewPdf.classList.add('view-hide');
+      viewLisp.classList.remove('view-hide');
+      pdfCompareBtn.classList.remove('active');
+    }
+  }
+
+  pdfCompareBtn.addEventListener('click', ()=>{
+    lispDropdown.classList.remove('open');
+    showView('pdf');
+  });
+  lispBtnEl.addEventListener('click', ()=> showView('lisp'));
 
   /* ---------- AutoLISP dropdown: click to open/stay, filter table by submenu ---------- */
   const lispBtn = document.getElementById('lispBtn');
@@ -830,7 +1031,24 @@
       'nav-dim': 'Lisp hiệu chỉnh Dim',
       'nav-scale': 'Lisp chỉnh Scale nhóm',
       'nav-measure': 'Lisp đo & tính toán',
-      'empty-row': 'Chưa có clip nào cho mục này — sẽ bổ sung sau.'
+      'empty-row': 'Chưa có clip nào cho mục này — sẽ bổ sung sau.',
+      'pdf-h1': 'PDF Compare Pro',
+      'pdf-lede': 'So sánh nhanh 2 bản vẽ PDF (bản cũ / bản mới), tự động tô màu phần thay đổi — dựng để phục vụ đúng công việc kiểm tra bản vẽ thiết kế cầu thép, không phải công cụ so PDF chung chung.',
+      'pdf-k-format': 'HÌNH THỨC', 'pdf-v-format': 'Phần mềm tải về (.exe)',
+      'pdf-k-platform': 'NỀN TẢNG', 'pdf-v-platform': 'Windows, chạy offline',
+      'pdf-k-price': 'GIÁ', 'pdf-v-price': 'Liên hệ',
+      'pdf-demo-title': 'Video demo',
+      'pdf-features-title': 'Tính năng chính',
+      'pdf-th-feature': 'TÊN TÍNH NĂNG',
+      'pdf-f1-title': 'Side by Side', 'pdf-f1-sub': 'Đặt 2 bản PDF cạnh nhau để đối chiếu trực tiếp',
+      'pdf-f2-title': 'Overlay', 'pdf-f2-sub': 'Chồng 2 bản vẽ lên nhau, lệch màu để thấy sai khác',
+      'pdf-f3-title': 'Highlight', 'pdf-f3-sub': 'Tự động tô màu riêng phần nét vẽ / chữ bị thêm, xóa, sửa',
+      'pdf-f4-title': 'Zoom chi tiết', 'pdf-f4-sub': 'Phóng to từng vùng thay đổi, ghi chú (memo) trực tiếp lên kết quả',
+      'pdf-f5-title': 'Xuất kết quả PDF', 'pdf-f5-sub': 'Lưu lại bản so sánh (kèm highlight) thành file PDF để gửi đi',
+      'pdf-cta-title': 'Quan tâm sản phẩm?',
+      'pdf-cta-sub': 'Liên hệ để được tư vấn, hoặc tải bản dùng thử về xem trước (cần license.dat để mở khóa đầy đủ).',
+      'pdf-cta-trial': 'TẢI BẢN DÙNG THỬ',
+      'pdf-cta-btn': 'LIÊN HỆ MUA (thêm email/Zalo sau)'
     },
     en: {
       'h1': 'Less drawing by hand, more done',
@@ -886,7 +1104,24 @@
       'nav-dim': 'Dim-editing lisp',
       'nav-scale': 'Group scaling lisp',
       'nav-measure': 'Measure & calculate lisp',
-      'empty-row': 'No clips for this category yet — coming later.'
+      'empty-row': 'No clips for this category yet — coming later.',
+      'pdf-h1': 'PDF Compare Pro',
+      'pdf-lede': 'Quickly compare two PDF drawings (old / new) with changes auto-highlighted — built for real steel-bridge design drawing checks, not a generic PDF diff tool.',
+      'pdf-k-format': 'FORMAT', 'pdf-v-format': 'Downloadable software (.exe)',
+      'pdf-k-platform': 'PLATFORM', 'pdf-v-platform': 'Windows, runs offline',
+      'pdf-k-price': 'PRICE', 'pdf-v-price': 'Contact for pricing',
+      'pdf-demo-title': 'Demo video',
+      'pdf-features-title': 'Key features',
+      'pdf-th-feature': 'FEATURE',
+      'pdf-f1-title': 'Side by Side', 'pdf-f1-sub': 'Places both PDFs side by side for direct comparison',
+      'pdf-f2-title': 'Overlay', 'pdf-f2-sub': 'Overlays both drawings with color separation to spot differences',
+      'pdf-f3-title': 'Highlight', 'pdf-f3-sub': 'Auto-highlights added, removed, and edited lines/text separately',
+      'pdf-f4-title': 'Zoom detail', 'pdf-f4-sub': 'Zoom into each changed area and add memos directly on the result',
+      'pdf-f5-title': 'Export result PDF', 'pdf-f5-sub': 'Saves the comparison (with highlights) as a PDF to send out',
+      'pdf-cta-title': 'Interested?',
+      'pdf-cta-sub': 'Get in touch for advice, or download the trial version (a license.dat is required to unlock full features).',
+      'pdf-cta-trial': 'DOWNLOAD TRIAL',
+      'pdf-cta-btn': 'CONTACT TO BUY (email/Zalo coming soon)'
     },
     ja: {
       'h1': '手描きを減らして、作業を進める',
@@ -942,7 +1177,24 @@
       'nav-dim': 'Dim編集系lisp',
       'nav-scale': 'グループScale系lisp',
       'nav-measure': '計測・計算系lisp',
-      'empty-row': 'この分類のクリップはまだありません — 追って追加予定。'
+      'empty-row': 'この分類のクリップはまだありません — 追って追加予定。',
+      'pdf-h1': 'PDF Compare Pro',
+      'pdf-lede': '2つのPDF図面(旧版・新版)を素早く比較し、変更箇所を自動で色分け表示 — 汎用のPDF比較ツールではなく、鋼橋設計図のチェック作業に合わせて作られています。',
+      'pdf-k-format': '形態', 'pdf-v-format': 'ダウンロード版ソフト(.exe)',
+      'pdf-k-platform': '対応環境', 'pdf-v-platform': 'Windows、オフライン動作',
+      'pdf-k-price': '価格', 'pdf-v-price': 'お問い合わせください',
+      'pdf-demo-title': 'デモ動画',
+      'pdf-features-title': '主な機能',
+      'pdf-th-feature': '機能名',
+      'pdf-f1-title': 'Side by Side', 'pdf-f1-sub': '2つのPDFを並べて直接見比べる',
+      'pdf-f2-title': 'Overlay', 'pdf-f2-sub': '2つの図面を重ねて色分けし、差分を確認',
+      'pdf-f3-title': 'Highlight', 'pdf-f3-sub': '追加・削除・変更された線や文字を自動で色分け表示',
+      'pdf-f4-title': 'Zoom detail', 'pdf-f4-sub': '変更箇所を拡大表示し、結果にメモを直接記入',
+      'pdf-f5-title': '結果PDFの出力', 'pdf-f5-sub': '比較結果(ハイライト付き)をPDFとして保存し送付可能',
+      'pdf-cta-title': 'ご興味がありますか？',
+      'pdf-cta-sub': 'ご相談はお問い合わせください。体験版はダウンロードいただけます（全機能を使うには license.dat が必要です）。',
+      'pdf-cta-trial': '体験版をダウンロード',
+      'pdf-cta-btn': 'お問い合わせ（メール・Zalo は後日追加）'
     }
   };
 
@@ -958,7 +1210,7 @@
       const key = el.getAttribute('data-i18n');
       if(dict[key] === undefined) return;
       // Khung demo đã có video thì không ghi đè (tránh mất video đang hiện)
-      if(el.classList.contains('detail-media') && el.querySelector('video')) return;
+      if((el.classList.contains('detail-media') || el.classList.contains('pdf-demo-media')) && el.querySelector('video')) return;
       el.textContent = dict[key];
     });
     currentLang = lang;
@@ -989,7 +1241,7 @@
   /* ---------- Auto-load demo video by command name ---------- */
   /* Tự tìm file "<cú_pháp>.mp4" (chữ thường) cùng thư mục với trang.
      Có file -> hiện video. Chưa có -> vẫn hiện chữ "Vùng đặt GIF / video demo" như cũ. */
-  document.querySelectorAll('.detail-media[data-video]').forEach((el)=>{
+  document.querySelectorAll('[data-video]').forEach((el)=>{
     const name = el.dataset.video;
     const v = document.createElement('video');
     v.controls = true;
