@@ -566,6 +566,19 @@
     tbody tr{padding:10px 0;}
   }
 
+  /* ---------- Nen phang cho vung noi dung chinh (bo o luoi de de doc chu) ---------- */
+  .content-backdrop{
+    position:fixed;
+    top:0; bottom:0;
+    left:calc(50% - 560px);
+    right:calc(50% - 560px);
+    background:var(--paper-bright);
+    z-index:-1;
+  }
+  @media (max-width:900px){
+    .content-backdrop{left:0; right:0;}
+  }
+
   /* ---------- Decorative margin marks (mép giấy vẽ, kiểu vạch lý trình) ---------- */
   .margin-mark{
     position:fixed;
@@ -619,6 +632,7 @@
 </style>
 </head>
 <body>
+<div class="content-backdrop"></div>
 <div class="margin-mark left"><div class="margin-ticks"></div></div>
 <div class="margin-mark right"><div class="margin-ticks"></div></div>
 
