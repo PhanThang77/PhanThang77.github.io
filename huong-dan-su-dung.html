@@ -32,6 +32,17 @@
   }
   h1,h2,h3{font-family:'Space Grotesk', sans-serif; font-weight:600; letter-spacing:-0.01em;}
   .wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+  .content-backdrop{
+    position:fixed;
+    top:0; bottom:0;
+    left:calc(50% - 400px);
+    right:calc(50% - 400px);
+    background:var(--paper-bright);
+    z-index:-1;
+  }
+  @media (max-width:840px){
+    .content-backdrop{left:0; right:0;}
+  }
   header{border-bottom:2px solid var(--ink); background:var(--paper-bright);}
   .titleblock{display:flex; justify-content:space-between; align-items:center; padding:16px 0;}
   .mark{font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:18px;}
@@ -73,6 +84,7 @@
 </style>
 </head>
 <body>
+<div class="content-backdrop"></div>
 
 <header>
   <div class="wrap titleblock">
