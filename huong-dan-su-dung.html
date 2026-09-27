@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hướng dẫn sử dụng — PDF Compare Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F1B2D;
+    --ink-soft:#1C2C43;
+    --paper:#E7E2D6;
+    --paper-bright:#F1EEE5;
+    --rust:#C4432B;
+    --teal:#4C7A6F;
+    --line:#9C9284;
+    --line-soft: rgba(156,146,132,0.35);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:15px;
+    line-height:1.65;
+    background-image:
+      linear-gradient(var(--line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  h1,h2,h3{font-family:'Space Grotesk', sans-serif; font-weight:600; letter-spacing:-0.01em;}
+  .wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+  header{border-bottom:2px solid var(--ink); background:var(--paper-bright);}
+  .titleblock{display:flex; justify-content:space-between; align-items:center; padding:16px 0;}
+  .mark{font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:18px;}
+  .mark span{color:var(--rust);}
+  .back{font-size:12px; color:var(--ink-soft); text-decoration:none; border:1px solid var(--ink); padding:7px 12px; border-radius:2px;}
+  .back:hover{background:var(--line-soft);}
+
+  .cover{padding:48px 0 24px;}
+  .cover h1{font-size:34px; line-height:1.15;}
+  .cover p.lede{margin-top:14px; color:var(--ink-soft); font-size:14.5px; max-width:60ch;}
+
+  section.step{padding:26px 0; border-bottom:1px solid var(--line-soft);}
+  section.step:last-of-type{border-bottom:none;}
+  .step-num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:26px; height:26px; border:1px solid var(--ink); border-radius:50%;
+    font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:13px;
+    margin-right:10px; flex-shrink:0;
+  }
+  .step-head{display:flex; align-items:center; margin-bottom:10px;}
+  .step-head h2{font-size:18px;}
+  .step p{margin-top:6px; font-size:14px;}
+  .step ul, .step ol{margin:8px 0 0 20px; font-size:14px;}
+  .step li{margin-bottom:4px;}
+  .note{
+    margin-top:10px; font-size:12.5px; color:var(--ink-soft);
+    border-left:2px solid var(--teal); padding:6px 12px; background:var(--paper-bright);
+  }
+  .warn{border-left-color:var(--rust);}
+
+  .notes-box{
+    margin:30px 0; padding:18px 20px; border:1px solid var(--ink); border-radius:2px; background:var(--paper-bright);
+  }
+  .notes-box h3{font-size:15px; margin-bottom:10px;}
+  .notes-box ul{margin-left:18px; font-size:13.5px;}
+  .notes-box li{margin-bottom:6px;}
+
+  footer{padding:28px 0 50px; text-align:center; font-size:12px; color:var(--ink-soft);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap titleblock">
+    <div class="mark">TRẠM<span>·</span>BẢN VẼ</div>
+    <a class="back" href="index.html">← Về trang chính</a>
+  </div>
+</header>
+
+<section class="cover wrap">
+  <h1>Hướng dẫn sử dụng<br>PDF Compare Pro</h1>
+  <p class="lede">Làm theo các bước dưới đây để kích hoạt và sử dụng phần mềm sau khi tải về.</p>
+</section>
+
+<div class="wrap">
+
+  <section class="step">
+    <div class="step-head"><span class="step-num">1</span><h2>Chạy thử lần đầu (lấy Machine ID)</h2></div>
+    <ol>
+      <li>Giải nén file đã tải về (nếu là file .zip).</li>
+      <li>Bấm đúp vào <strong>PDF_Compare_Pro.exe</strong> để chạy.</li>
+      <li>Trình duyệt sẽ tự mở sau 1-2 giây — nếu không tự mở, vào trình duyệt gõ <code>http://localhost:8000</code>.</li>
+      <li>Màn hình sẽ hiện dòng <strong>"Activation required"</strong> kèm <strong>Machine ID</strong> — mã riêng của máy bạn.</li>
+    </ol>
+    <p class="note">Máy chưa có license.dat sẽ luôn báo dòng này — đây là điều bình thường, chưa phải lỗi.</p>
+  </section>
+
+  <section class="step">
+    <div class="step-head"><span class="step-num">2</span><h2>Gửi Machine ID cho chúng tôi</h2></div>
+    <p>Chụp màn hình hoặc copy nguyên văn dòng Machine ID, gửi qua email <strong>phanthangjp@gmail.com</strong> khi đăng ký mua.</p>
+  </section>
+
+  <section class="step">
+    <div class="step-head"><span class="step-num">3</span><h2>Nhận file license.dat</h2></div>
+    <p>Sau khi xác nhận thanh toán, bạn sẽ nhận lại 1 file tên <strong>license.dat</strong> — đây là "chìa khóa" kích hoạt riêng cho đúng máy bạn, không dùng được trên máy khác.</p>
+  </section>
+
+  <section class="step">
+    <div class="step-head"><span class="step-num">4</span><h2>Kích hoạt</h2></div>
+    <ol>
+      <li>Đóng phần mềm đang chạy (nếu đang mở).</li>
+      <li>Copy file <strong>license.dat</strong> vừa nhận vào <strong>cùng thư mục</strong> với file <strong>PDF_Compare_Pro.exe</strong>.</li>
+      <li>Chạy lại PDF_Compare_Pro.exe — dòng "Activation required" sẽ biến mất.</li>
+    </ol>
+  </section>
+
+  <section class="step">
+    <div class="step-head"><span class="step-num">5</span><h2>Cách so sánh 2 bản vẽ PDF</h2></div>
+    <ol>
+      <li>Vào <code>http://localhost:8000</code></li>
+      <li>Kéo (hoặc bấm Browse chọn) file PDF <strong>bản cũ</strong> vào ô "Old Version PDF"</li>
+      <li>Kéo file PDF <strong>bản mới</strong> vào ô "New Version PDF"</li>
+      <li>Bấm <strong>"Find difference"</strong>, đợi xử lý xong</li>
+      <li>Xem kết quả qua 4 tab: <strong>Side by Side</strong> (đặt cạnh nhau) / <strong>Overlay</strong> (chồng màu) / <strong>Highlight</strong> (tô khác biệt) / <strong>Zoom chi tiết</strong></li>
+      <li>Có thể ghi chú (memo) trực tiếp lên kết quả, và xuất ra file PDF để lưu hoặc gửi đi</li>
+    </ol>
+  </section>
+
+  <div class="notes-box">
+    <h3>Một vài lưu ý</h3>
+    <ul>
+      <li>Phần mềm chạy <strong>hoàn toàn offline trên máy bạn</strong> — file PDF không gửi lên mạng, không rời khỏi máy.</li>
+      <li><strong>license.dat chỉ dùng được trên đúng máy đã đăng ký</strong> (theo Machine ID). Đổi máy mới cần gửi lại Machine ID mới để cấp license khác.</li>
+      <li>Nếu <strong>Windows chặn</strong> khi mở file (SmartScreen báo "Windows protected your PC"), bấm <strong>"More info" → "Run anyway"</strong> — phần mềm chưa có chữ ký số nên đôi khi bị cảnh báo, không phải virus.</li>
+      <li>Có vấn đề gì trong quá trình dùng, cứ liên hệ lại <strong>phanthangjp@gmail.com</strong>, hỗ trợ trực tiếp.</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>PDF Compare Pro — công cụ so sánh bản vẽ PDF dành riêng cho công việc thiết kế kiến trúc xây dựng.</footer>
+
+</body>
+</html>
